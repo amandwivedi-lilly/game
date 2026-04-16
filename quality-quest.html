@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Quality Quest – Lilly Quality Forum 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0a0e1a;color:#f1f5f9;min-height:100vh;overflow-x:hidden}
+:root{--bg:#0a0e1a;--surface:#111827;--card:#16203a;--border:#2a3654;--accent:#e11d48;--accent-light:#fb7185;--gold:#f59e0b;--green:#10b981;--blue:#3b82f6;--purple:#8b5cf6;--red:#ef4444;--text:#f1f5f9;--muted:#94a3b8;--dim:#64748b}
+
+.screen{display:none;min-height:100vh;flex-direction:column;align-items:center;padding:16px}
+.screen.active{display:flex}
+.container{max-width:520px;width:100%;position:relative}
+
+/* ── Backgrounds ── */
+.glow-top{position:fixed;top:-120px;right:-120px;width:400px;height:400px;background:radial-gradient(circle,rgba(225,29,72,0.12) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0}
+.glow-bot{position:fixed;bottom:-80px;left:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(59,130,246,0.08) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:0}
+
+/* ── Register ── */
+.badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e11d48,#be123c);padding:6px 16px;border-radius:50px;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;margin-bottom:12px}
+.main-title{font-size:36px;font-weight:900;line-height:1.05;margin:0 0 8px;background:linear-gradient(135deg,#f1f5f9,#cbd5e1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{font-size:15px;color:var(--muted);margin:0 0 32px;line-height:1.5}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.field input{width:100%;padding:13px 16px;background:#1e293b;border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(225,29,72,0.15)}
+.field input::placeholder{color:#475569}
+.btn{padding:14px 32px;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.btn-primary{background:linear-gradient(135deg,#e11d48,#be123c);color:#fff;box-shadow:0 4px 20px rgba(225,29,72,0.25)}
+.btn-gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#0a0e1a;box-shadow:0 4px 20px rgba(245,158,11,0.3)}
+.btn-ghost{background:transparent;color:var(--muted);font-size:13px;padding:10px}
+.btn-surface{background:#1e293b;color:var(--text);border:1px solid var(--border)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.error-msg{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px 16px;color:#ef4444;font-size:13px;font-weight:600;margin-bottom:16px;display:none;text-align:center}
+
+/* ── Instructions ── */
+.instr-item{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+.instr-icon{font-size:24px;width:48px;height:48px;min-width:48px;display:flex;align-items:center;justify-content:center;background:#1e293b;border-radius:12px}
+.instr-title{font-size:15px;font-weight:700;margin-bottom:3px}
+.instr-desc{font-size:13px;color:var(--muted);line-height:1.4}
+.scoring-box{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:16px;margin-bottom:24px}
+.scoring-box p{font-size:13px;color:var(--gold);line-height:1.5;margin:0}
+
+/* ── Timer Bar ── */
+.timer-bar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,0.95);backdrop-filter:blur(12px);padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:16px}
+.timer-inner{max-width:520px;margin:0 auto;padding:0 16px}
+.timer-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.timer-name{font-size:13px;color:var(--muted)}
+.timer-right{display:flex;align-items:center;gap:16px}
+.timer-score{font-size:14px;font-weight:600;color:var(--gold)}
+.timer-clock{font-size:20px;font-weight:800;font-family:'Segoe UI',monospace;letter-spacing:-0.5px}
+.timer-track{height:4px;background:#1e293b;border-radius:4px;overflow:hidden}
+.timer-fill{height:100%;border-radius:4px;transition:width 1s linear}
+
+/* ── Section Progress ── */
+.sec-progress{display:flex;gap:6px;margin-bottom:20px}
+.sec-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.sec-bar{height:4px;width:100%;border-radius:4px;transition:all .3s}
+.sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+
+/* ── Question Card ── */
+.q-card{background:var(--card);border-radius:14px;padding:20px;border:1px solid var(--border);margin-bottom:16px;transition:all .3s}
+.q-card.correct{background:rgba(16,185,129,0.08);border-color:var(--green)}
+.q-card.wrong{background:rgba(239,68,68,0.08);border-color:var(--red)}
+.q-counter{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.q-section-tag{font-size:13px;color:var(--muted);font-weight:600}
+.q-num-tag{font-size:13px;font-weight:600;color:var(--accent-light);background:rgba(225,29,72,0.13);padding:4px 12px;border-radius:20px}
+
+/* ── Fill Blank ── */
+.q-sentence{font-size:15px;font-weight:500;line-height:1.7;margin-bottom:20px}
+.blank-slot{display:inline-block;min-width:80px;border-bottom:2px dashed var(--accent-light);color:var(--accent-light);font-weight:700;padding:0 4px;margin:0 4px;text-align:center;transition:all .3s}
+.blank-slot.correct-slot{border-color:var(--green);color:var(--green)}
+.blank-slot.wrong-slot{border-color:var(--red);color:var(--red)}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt-btn{padding:13px 14px;background:#1e293b;border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;text-align:center;cursor:pointer;transition:all .2s;font-weight:600}
+.opt-btn:hover{background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.4)}
+.opt-btn.sel{background:rgba(59,130,246,0.15);border-color:var(--blue);color:var(--blue)}
+.opt-btn.correct-opt{background:rgba(16,185,129,0.15);border-color:var(--green);color:var(--green)}
+.opt-btn.wrong-opt{background:rgba(239,68,68,0.15);border-color:var(--red);color:var(--red)}
+
+/* ── Scramble ── */
+.scramble-hint{font-size:13px;color:var(--muted);margin-bottom:16px;text-align:center}
+.scramble-letters{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;margin-bottom:20px}
+.scramble-tile{display:inline-flex;align-items:center;justify-content:center;width:36px;height:42px;background:#1e293b;border:1px solid var(--border);border-radius:8px;font-size:18px;font-weight:700;font-family:'Segoe UI',monospace;color:var(--accent-light)}
+.scramble-input-row{display:flex;gap:8px}
+.scramble-input{flex:1;padding:13px 16px;background:#1e293b;border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;font-family:'Segoe UI',monospace;text-transform:uppercase;letter-spacing:2px;outline:none}
+.scramble-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(225,29,72,0.15)}
+.btn-check{padding:13px 20px;background:linear-gradient(135deg,#e11d48,#be123c);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-skip{background:transparent;color:var(--dim);font-size:13px;border:none;cursor:pointer;margin-top:12px;font-family:inherit;padding:8px 16px}
+
+/* ── Myth Buster ── */
+.myth-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--purple);background:rgba(139,92,246,0.12);padding:4px 10px;border-radius:6px;margin-bottom:14px}
+.myth-statement{font-size:15px;font-weight:500;line-height:1.6;margin-bottom:20px}
+.myth-btns{display:flex;gap:12px}
+.myth-true,.myth-false{flex:1;padding:16px;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;border:2px solid;font-family:inherit;transition:all .2s}
+.myth-true{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.4);color:var(--green)}
+.myth-false{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.4);color:var(--red)}
+.myth-explain{margin-top:16px;padding:12px 16px;border-radius:10px;font-size:12px;line-height:1.5}
+.myth-explain.explain-correct{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2)}
+.myth-explain.explain-wrong{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2)}
+.myth-explain-title{font-size:14px;font-weight:700;margin-bottom:4px}
+
+/* ── Game Over Overlay ── */
+.game-frozen{pointer-events:none;opacity:.3;transition:opacity .3s}
+
+/* ── Result ── */
+.result-emoji{font-size:56px;margin-bottom:12px}
+.result-title{font-size:26px;font-weight:900;margin-bottom:8px}
+.result-sub{color:var(--muted);margin-bottom:32px;font-size:14px}
+.result-box{background:var(--card);border-radius:20px;padding:32px;border:1px solid var(--border);margin-bottom:24px}
+.result-score{font-size:48px;font-weight:900;color:var(--gold);font-family:'Segoe UI',monospace}
+.result-score-label{font-size:13px;color:var(--muted);margin-top:8px}
+.result-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
+.result-stat-val{font-size:14px;font-weight:700}
+.result-stat-label{font-size:11px;color:var(--dim)}
+
+/* ── Leaderboard ── */
+.lb-title{font-size:22px;font-weight:800}
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);margin-bottom:8px}
+.lb-rank{font-size:20px;width:32px;text-align:center}
+.lb-rank-num{font-size:14px;color:var(--dim);font-weight:600;width:32px;text-align:center}
+.lb-info{flex:1}
+.lb-name{font-size:14px;font-weight:700}
+.lb-id{font-size:11px;color:var(--dim)}
+.lb-score-col{text-align:right}
+.lb-score-val{font-size:16px;font-weight:800;color:var(--gold)}
+.lb-time-val{font-size:11px;color:var(--muted)}
+.lb-row.gold-row{background:rgba(245,158,11,0.12);border-color:var(--gold)}
+.lb-row.silver-row{background:rgba(59,130,246,0.1);border-color:var(--blue)}
+.lb-row.bronze-row{background:rgba(139,92,246,0.1);border-color:var(--purple)}
+.lb-empty{text-align:center;padding:60px 0;color:var(--muted)}
+.lb-empty-icon{font-size:40px;margin-bottom:12px}
+.sync-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:8px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+
+/* ── Admin ── */
+.admin-card{background:var(--card);border-radius:16px;padding:28px;border:1px solid var(--border);margin-bottom:16px}
+.admin-card h2{font-size:20px;font-weight:800;margin-bottom:16px;text-align:center}
+.qr-img{display:block;margin:0 auto 16px;border:3px solid var(--border);border-radius:12px;max-width:220px;width:100%}
+.url-row{display:flex;gap:8px;margin-bottom:8px}
+.url-row input{flex:1;padding:10px 12px;background:#1e293b;border:1px solid var(--border);border-radius:9px;font-size:13px;font-family:monospace;color:var(--text);outline:none}
+.url-row button{padding:10px 14px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer}
+.setup-info{background:#1e293b;border-radius:10px;padding:14px;font-size:12px;color:var(--muted);line-height:1.6;margin-top:14px}
+.setup-info strong{color:var(--text)}
+.setup-info code{background:var(--border);padding:1px 5px;border-radius:4px;font-size:11px}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+</style>
+</head>
+<body>
+
+<div class="glow-top"></div>
+<div class="glow-bot"></div>
+
+<!-- ═══════════════ REGISTER ═══════════════ -->
+<div id="screen-register" class="screen active">
+  <div class="container" style="padding-top:24px;text-align:center;animation:fadeUp .5s ease">
+    <div class="badge">◆ Lilly Quality Forum 2026</div>
+    <h1 class="main-title">Quality Quest</h1>
+    <p class="subtitle">Test your quality expertise across three back-to-back challenges. One shot. Five minutes. Climb the leaderboard.</p>
+    <div id="regError" class="error-msg"></div>
+    <div class="field" style="text-align:left"><label>Your Name</label><input id="inpName" placeholder="Enter your full name" /></div>
+    <div class="field" style="text-align:left"><label>Lilly ID</label><input id="inpLillyId" placeholder="e.g. C123456" /></div>
+    <button class="btn btn-primary" id="btnRegister" onclick="handleRegister()">Continue →</button>
+    <button class="btn btn-ghost" onclick="showLeaderboard()">🏆 View Leaderboard</button>
+    <button class="btn btn-ghost" style="font-size:11px;color:#475569;margin-top:4px" onclick="showAdmin()">⚙ QR & Setup</button>
+  </div>
+</div>
+
+<!-- ═══════════════ ALREADY PLAYED ═══════════════ -->
+<div id="screen-already" class="screen">
+  <div class="container" style="padding-top:48px;text-align:center;animation:fadeUp .5s ease">
+    <div style="font-size:56px;margin-bottom:16px">🚫</div>
+    <h2 style="font-size:24px;font-weight:800;margin-bottom:12px">Already Played!</h2>
+    <p style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:28px">This Lilly ID has already been used to play Quality Quest. Each player gets only one attempt!</p>
+    <button class="btn btn-gold" onclick="showLeaderboard()">🏆 View Leaderboard</button>
+    <button class="btn btn-ghost" onclick="goRegister()">← Back to Registration</button>
+  </div>
+</div>
+
+<!-- ═══════════════ INSTRUCTIONS ═══════════════ -->
+<div id="screen-instructions" class="screen">
+  <div class="container" style="padding-top:32px;animation:fadeUp .5s ease">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="font-size:48px;margin-bottom:16px">📋</div>
+      <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">How to Play</h2>
+      <p style="color:var(--muted);font-size:14px">Welcome, <strong id="instrName" style="color:var(--text)"></strong>!</p>
+    </div>
+    <div class="instr-item"><div class="instr-icon">📝</div><div><div class="instr-title">3 Sections, Back-to-Back</div><div class="instr-desc">Fill in the Blank → Word Unscrambler → Myth Buster. 15 questions each, 45 total.</div></div></div>
+    <div class="instr-item"><div class="instr-icon">⏱️</div><div><div class="instr-title">5 Minutes Total</div><div class="instr-desc">One shared timer across all three sections. Speed matters!</div></div></div>
+    <div class="instr-item"><div class="instr-icon">⚡</div><div><div class="instr-title">Speed Bonus</div><div class="instr-desc">10 points per correct answer. Finish faster to earn time bonus points. Zero correct = zero total points.</div></div></div>
+    <div class="instr-item"><div class="instr-icon">🔒</div><div><div class="instr-title">One Attempt Only</div><div class="instr-desc">You get one shot — make it count! No replays allowed.</div></div></div>
+    <div class="scoring-box"><p><strong>Scoring:</strong> 10 pts per correct answer + time bonus (1 pt per 3 sec remaining). If you get zero correct, your score stays at 0.</p></div>
+    <button class="btn btn-gold" onclick="startGame()">I'm Ready — Let's Go! 🚀</button>
+  </div>
+</div>
+
+<!-- ═══════════════ GAME ═══════════════ -->
+<div id="screen-game" class="screen" style="padding:0">
+  <div class="timer-bar">
+    <div class="timer-inner">
+      <div class="timer-row">
+        <span class="timer-name" id="gamePlayerName"></span>
+        <div class="timer-right">
+          <span class="timer-score" id="gameScore">★ 0</span>
+          <span class="timer-clock" id="gameClock">5:00</span>
+        </div>
+      </div>
+      <div class="timer-track"><div class="timer-fill" id="gameTimerFill" style="width:100%;background:linear-gradient(90deg,#e11d48,#f59e0b)"></div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="sec-progress" id="secProgress"></div>
+    <div id="gameContent"></div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn btn-primary" style="font-size:14px;width:auto;padding:12px 24px" id="btnSubmitEarly" onclick="doFinish(false)">Submit & Finish Early ⏹</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ RESULT ═══════════════ -->
+<div id="screen-result" class="screen">
+  <div class="container" style="padding-top:32px;text-align:center;animation:scaleIn .4s ease">
+    <div class="result-emoji" id="resultEmoji"></div>
+    <h2 class="result-title" id="resultTitle"></h2>
+    <p class="result-sub" id="resultSub"></p>
+    <div class="result-box">
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-score-label">Total Points</div>
+      <div class="result-stats">
+        <div><div class="result-stat-val" id="resultLillyId"></div><div class="result-stat-label">Lilly ID</div></div>
+        <div><div class="result-stat-val" id="resultTime"></div><div class="result-stat-label">Time Taken</div></div>
+      </div>
+    </div>
+    <button class="btn btn-gold" onclick="showLeaderboard()">🏆 View Leaderboard</button>
+  </div>
+</div>
+
+<!-- ═══════════════ LEADERBOARD ═══════════════ -->
+<div id="screen-leaderboard" class="screen">
+  <div class="container" style="padding-top:16px;animation:fadeUp .4s ease">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h2 class="lb-title">🏆 Leaderboard</h2>
+      <div>
+        <button class="btn btn-surface" style="width:auto;padding:8px 14px;font-size:13px;margin-right:6px" onclick="fetchAndRenderLB()">↻ Refresh</button>
+        <button class="btn btn-surface" style="width:auto;padding:8px 14px;font-size:13px" onclick="goBack()">← Back</button>
+      </div>
+    </div>
+    <div class="sync-badge"><span class="sync-dot"></span> Live — updates every 15 seconds</div>
+    <div id="lbBody" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN ═══════════════ -->
+<div id="screen-admin" class="screen">
+  <div class="container" style="padding-top:24px;animation:fadeUp .5s ease">
+    <div class="admin-card">
+      <h2>📷 QR Code & Setup</h2>
+      <img id="qrImg" class="qr-img" src="" alt="QR Code" />
+      <div class="url-row">
+        <input id="qrUrlInp" type="text" placeholder="Your hosted quiz URL" />
+        <button onclick="genQR()">Generate</button>
+      </div>
+      <div style="font-size:11px;color:var(--dim);text-align:center;margin-bottom:8px">Scan to open on any phone — no app needed</div>
+      <div class="field" style="margin-top:14px">
+        <label>🔑 GitHub PAT (embedded in QR only)</label>
+        <input id="ghTokenInp" type="password" placeholder="ghp_yourtoken..." style="font-family:monospace" />
+        <div style="font-size:10px;color:var(--dim);margin-top:4px">Token is added to QR URL as <code style="background:var(--border);padding:1px 5px;border-radius:4px">?t=token</code> — not stored in code</div>
+      </div>
+      <div class="setup-info">
+        <strong>How it works:</strong><br><br>
+        1. Create a file <code>leaderboard.json</code> in your GitHub repo with: <code>{"leaderboard":[],"players":[]}</code><br><br>
+        2. Paste your GitHub PAT above and click Generate QR.<br><br>
+        3. Participants scan the QR. Token loads from URL, scores sync live across all devices. ✓
+      </div>
+    </div>
+    <button class="btn btn-surface" style="margin-top:8px" onclick="clearAllData()">🗑 Clear All Leaderboard Data</button>
+    <button class="btn btn-ghost" onclick="goRegister()">← Back to Quiz</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   CONFIG — CHANGE THESE TO YOUR REPO
+   ══════════════════════════════════════════════════ */
+const GH_OWNER = "amandwivedi-lilly";
+const GH_REPO  = "game";
+const GH_FILE  = "leaderboard.json";
+const GH_API   = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + GH_FILE;
+
+const TOTAL_TIME = 300; // 5 minutes
+const Q_PER_SECTION = 15;
+
+/* ══════════════════════════════════════════════════
+   DATA BANKS
+   ══════════════════════════════════════════════════ */
+const FILL_BLANKS = [
+  {s:"The _____ principle requires that all data entries can be traced to the person who made them.",a:"Attributable",o:["Attributable","Legible","Contemporaneous","Enduring"]},
+  {s:"A _____ is raised when a process or result does not conform to approved procedures.",a:"Deviation",o:["CAPA","Deviation","Change Control","Complaint"]},
+  {s:"_____ validation provides documented evidence that a process consistently produces quality product.",a:"Process",o:["Cleaning","Computer","Process","Method"]},
+  {s:"The acronym GMP stands for Good _____ Practice.",a:"Manufacturing",o:["Management","Manufacturing","Monitoring","Marketing"]},
+  {s:"21 CFR Part _____ governs electronic records and electronic signatures.",a:"11",o:["11","211","820","58"]},
+  {s:"In ALCOA+, the 'C' in the plus stands for _____.",a:"Complete",o:["Controlled","Certified","Complete","Calibrated"]},
+  {s:"A _____ cause analysis identifies the fundamental reason for a quality problem.",a:"Root",o:["Primary","Root","Direct","Surface"]},
+  {s:"_____ control ensures that only current, approved documents are in use.",a:"Document",o:["Quality","Change","Document","Version"]},
+  {s:"ICH Q10 describes the Pharmaceutical _____ System.",a:"Quality",o:["Safety","Quality","Regulatory","Production"]},
+  {s:"An OOS result stands for Out of _____.",a:"Specification",o:["Standard","Specification","Service","Scope"]},
+  {s:"Environmental _____ detects and controls contamination in manufacturing areas.",a:"Monitoring",o:["Cleaning","Monitoring","Testing","Sampling"]},
+  {s:"_____ action addresses the cause of an existing nonconformity to prevent recurrence.",a:"Corrective",o:["Corrective","Preventive","Immediate","Emergency"]},
+  {s:"A batch _____ documents the complete manufacturing history of a product lot.",a:"Record",o:["Report","Record","Review","Release"]},
+  {s:"Data _____ ensures that information is complete, consistent, and accurate throughout its lifecycle.",a:"Integrity",o:["Security","Integrity","Privacy","Backup"]},
+  {s:"_____ qualification confirms that equipment operates correctly within specified parameters.",a:"Operational",o:["Installation","Operational","Performance","Design"]},
+  {s:"The 'A' in CAPA stands for _____.",a:"Action",o:["Assessment","Analysis","Action","Audit"]},
+  {s:"A _____ letter from FDA notifies a company of significant regulatory violations.",a:"Warning",o:["Compliance","Warning","Observation","Enforcement"]},
+  {s:"SOP stands for Standard _____ Procedure.",a:"Operating",o:["Operational","Operating","Output","Oversight"]},
+  {s:"_____ by Design (QbD) builds quality into products from the development stage.",a:"Quality",o:["Qualification","Quality","Quantification","Questioning"]},
+  {s:"A mock _____ tests a company's readiness to retrieve products from the market.",a:"Recall",o:["Audit","Recall","Inspection","Review"]},
+  {s:"_____ Process Verification (CPV) is the third stage of process validation.",a:"Continued",o:["Certified","Controlled","Continued","Complete"]},
+  {s:"FMEA stands for Failure _____ and Effects Analysis.",a:"Mode",o:["Mode","Method","Mechanism","Management"]},
+  {s:"The 'L' in ALCOA stands for _____.",a:"Legible",o:["Logical","Legal","Legible","Limited"]},
+  {s:"A _____ agreement defines quality expectations between a company and its suppliers.",a:"Quality",o:["Service","Quality","Supply","Business"]},
+  {s:"In GMP, corrections to documents must use a single-line _____ with initials and date.",a:"Strikethrough",o:["Deletion","Strikethrough","Erasure","Correction"]},
+  {s:"PAT stands for Process _____ Technology.",a:"Analytical",o:["Automated","Analytical","Advanced","Applied"]},
+  {s:"A Critical Quality _____ (CQA) must be within limits to ensure product quality.",a:"Attribute",o:["Assessment","Attribute","Analysis","Approval"]},
+  {s:"_____ validation ensures that cleaning procedures effectively remove residues.",a:"Cleaning",o:["Process","Method","Cleaning","Equipment"]},
+  {s:"An _____ trail captures who, what, when, and why for electronic records.",a:"Audit",o:["Access","Activity","Audit","Action"]},
+  {s:"The purpose of _____ control is to manage changes to validated processes systematically.",a:"Change",o:["Quality","Document","Change","Process"]},
+  {s:"GLP stands for Good _____ Practice.",a:"Laboratory",o:["Laboratory","Logistics","Licensing","Learning"]},
+  {s:"Supplier _____ must be completed before materials are used in GMP manufacturing.",a:"Qualification",o:["Negotiation","Qualification","Selection","Ordering"]},
+  {s:"_____ records document that personnel are trained and qualified for their GMP tasks.",a:"Training",o:["Personnel","Training","Employment","Performance"]},
+  {s:"An Annual Product _____ evaluates quality trends and process performance.",a:"Review",o:["Report","Review","Release","Recall"]},
+  {s:"The 'O' in ALCOA stands for _____.",a:"Original",o:["Organized","Official","Original","Observable"]},
+  {s:"_____ culture embeds a quality mindset into organizational values and behaviors.",a:"Quality",o:["Corporate","Safety","Quality","Compliance"]},
+  {s:"A pharmacovigilance system monitors adverse drug _____ after market release.",a:"Reactions",o:["Events","Reactions","Effects","Outcomes"]},
+  {s:"Water For _____ (WFI) is the highest purity grade of water in pharma manufacturing.",a:"Injection",o:["Infusion","Injection","Irrigation","Inhalation"]},
+  {s:"MES stands for Manufacturing _____ System.",a:"Execution",o:["Evaluation","Execution","Equipment","Engineering"]},
+  {s:"A non-conformance _____ documents any departure from approved standards.",a:"Report",o:["Review","Report","Record","Request"]},
+  {s:"In data integrity, '_____ ' means data is recorded at the time the activity is performed.",a:"Contemporaneous",o:["Consistent","Contemporaneous","Complete","Certified"]},
+  {s:"_____ testing evaluates how product quality changes over time under various conditions.",a:"Stability",o:["Stress","Stability","Sterility","Strength"]},
+  {s:"The 'E' in ALCOA+ stands for _____.",a:"Enduring",o:["Effective","Electronic","Enduring","Evidenced"]},
+  {s:"A _____ process parameter (CPP) is a variable whose changes impact a CQA.",a:"Critical",o:["Controlled","Core","Critical","Certified"]},
+  {s:"GDP stands for Good _____ Practice in pharma.",a:"Documentation",o:["Distribution","Documentation","Development","Dispensing"]},
+  {s:"_____ system validation ensures that software is fit for its intended GMP purpose.",a:"Computer",o:["Control","Computer","Compliance","Core"]},
+  {s:"A Pre-Approval _____ (PAI) is conducted by FDA before approving a new drug application.",a:"Inspection",o:["Investigation","Inspection","Interview","Inquiry"]},
+  {s:"_____ monitoring tracks whether a validated process stays in a state of control.",a:"Continuous",o:["Periodic","Annual","Continuous","Random"]},
+  {s:"A _____ risk assessment systematically identifies and evaluates risks to product quality.",a:"Quality",o:["Safety","Quality","Business","Financial"]},
+  {s:"_____ Process Control (SPC) uses statistical techniques to monitor process variability.",a:"Statistical",o:["Standard","Statistical","Systematic","Strategic"]},
+];
+
+const SCRAMBLE_WORDS = [
+  "BATCH","AUDIT","ASSAY","TREND","DRAFT","YIELD","RINSE","LABEL","SWAB","RISK",
+  "DOSE","PURGE","BLEND","FLUID","GAUGE","CLEAN","SHELF","PROBE","GRADE","TOXIC",
+  "VALID","SCALE","TRACK","CYCLE","DECAY","LIMIT","WASTE","ALERT","DRIFT","FIBER",
+  "PATCH","LEACH","RESIN","VAPOR","SIEVE","DEFECT","SAMPLE","HAZARD","RECALL","COMPLY",
+  "IMPURE","STABLE","ROBUST","MATRIX","VERIFY","FILTER","POTENT","CLAUSE","STERILE","RESIDUE"
+];
+
+const MYTHS = [
+  {s:"Using pencil in a GMP area is acceptable as long as you write clearly.",a:false,e:"Pencil entries can be erased, violating data integrity. Only permanent ink is allowed."},
+  {s:"ALCOA+ stands for Attributable, Legible, Contemporaneous, Original, Accurate, plus Complete, Consistent, Enduring, Available.",a:true,e:"This is the correct expansion of the ALCOA+ data integrity framework."},
+  {s:"A deviation can be closed without a root cause investigation if the impact is minor.",a:false,e:"All deviations require investigation. The depth may vary, but root cause analysis must always be attempted."},
+  {s:"21 CFR Part 11 governs the use of electronic records and electronic signatures.",a:true,e:"Part 11 sets criteria for electronic records to be trustworthy and equivalent to paper."},
+  {s:"Backdating a document is acceptable if you know the original date of the activity.",a:false,e:"Backdating is a serious data integrity violation. Entries must be contemporaneous."},
+  {s:"Quality culture is solely the responsibility of the Quality department.",a:false,e:"Quality culture is everyone's responsibility across the entire organization."},
+  {s:"An OOS result should be invalidated immediately to avoid production delays.",a:false,e:"OOS results require formal investigation. They cannot be invalidated without scientific justification."},
+  {s:"CAPA stands for Corrective Action and Preventive Action.",a:true,e:"CAPA addresses fixing existing problems and preventing future ones."},
+  {s:"Environmental monitoring is only required in sterile manufacturing areas.",a:false,e:"EM is required in all controlled manufacturing environments, not just sterile areas."},
+  {s:"Change control is required before implementing changes to validated processes.",a:true,e:"All changes to validated processes must go through formal change control."},
+  {s:"White-out or correction fluid is acceptable for correcting GMP documents.",a:false,e:"Corrections must use single line strikethrough with initials and date."},
+  {s:"Process validation requires three consecutive successful batches as a universal rule.",a:false,e:"Modern guidance uses a lifecycle approach — the number depends on risk and statistics."},
+  {s:"Shared login credentials are acceptable if only trusted employees use them.",a:false,e:"Shared logins violate the 'Attributable' principle of ALCOA."},
+  {s:"A batch record must be reviewed and approved before product release.",a:true,e:"Batch record review by QA is mandatory before product release."},
+  {s:"GMP stands for Good Manufacturing Practice.",a:true,e:"GMP ensures products are consistently produced and controlled to quality standards."},
+  {s:"Training records are optional for experienced employees in GMP environments.",a:false,e:"Training documentation is mandatory for ALL personnel regardless of experience."},
+  {s:"Data integrity applies only to electronic records, not paper-based systems.",a:false,e:"Data integrity principles apply equally to both electronic and paper records."},
+  {s:"An audit trail must capture who did what, when, and why for electronic records.",a:true,e:"Audit trails are essential for traceability and accountability."},
+  {s:"SOPs can be updated without formal approval in urgent cases.",a:false,e:"All SOP changes require formal review and approval, even in urgent situations."},
+  {s:"ICH Q10 describes the Pharmaceutical Quality System model.",a:true,e:"ICH Q10 provides a comprehensive model for an effective pharmaceutical quality system."},
+  {s:"Cleaning validation proves that cleaning procedures consistently remove residues to acceptable levels.",a:true,e:"Cleaning validation provides documented evidence that cleaning is effective."},
+  {s:"Risk assessment is only necessary for high-risk processes.",a:false,e:"Quality risk management should be applied across all processes."},
+  {s:"A warning letter from FDA requires a response within 15 business days.",a:true,e:"Companies must respond within 15 business days with a corrective action plan."},
+  {s:"Verbal instructions can replace written SOPs during emergencies.",a:false,e:"GMP requires documented procedures. Verbal instructions are never a substitute."},
+  {s:"Stability studies help determine the shelf life and storage conditions of a product.",a:true,e:"Stability testing evaluates how product quality changes over time."},
+  {s:"QbD means building quality into a product from the development stage.",a:true,e:"QbD begins with predefined objectives and emphasizes product understanding."},
+  {s:"If a calibration sticker is expired, the instrument can still be used for non-critical tests.",a:false,e:"Equipment with expired calibration must not be used for any GMP testing."},
+  {s:"FMEA is a tool used to identify potential failure modes and their effects.",a:true,e:"FMEA is a systematic risk assessment methodology widely used in quality."},
+  {s:"It's acceptable to pre-sign blank GMP forms to save time.",a:false,e:"Pre-signing blank forms is a data integrity violation."},
+  {s:"Continued Process Verification (CPV) is the third stage of process validation.",a:true,e:"Stage 3 (CPV) involves ongoing assurance during routine production."},
+  {s:"Only the Quality department can initiate a CAPA.",a:false,e:"Any department can and should initiate a CAPA when needed."},
+  {s:"A supplier can be used before completing supplier qualification if they offer the best price.",a:false,e:"Supplier qualification must be completed before materials are used in GMP."},
+  {s:"Pharmacovigilance involves monitoring adverse drug reactions after market release.",a:true,e:"Pharmacovigilance detects, assesses, and prevents adverse effects."},
+  {s:"GDP requires that entries be clear, legible, and permanent.",a:true,e:"GDP ensures all records are accurate, complete, and maintained to quality standards."},
+  {s:"You can copy test results from a colleague's notebook if you witnessed the test.",a:false,e:"Each person must document their own observations — ALCOA 'Original' principle."},
+  {s:"OOT results always indicate a product failure.",a:false,e:"OOT indicates a trending concern requiring investigation, not necessarily failure."},
+  {s:"Computer System Validation ensures software is fit for its intended GMP purpose.",a:true,e:"CSV provides documented evidence a system consistently performs as intended."},
+  {s:"A mock recall tests a company's ability to effectively recall a product.",a:true,e:"Mock recalls verify recall procedures can be executed within required timeframes."},
+  {s:"PAT allows real-time monitoring and control of manufacturing.",a:true,e:"PAT uses timely measurements to ensure quality during manufacturing."},
+  {s:"Deviations classified as 'minor' do not need to be documented.",a:false,e:"All deviations must be formally documented regardless of classification."},
+  {s:"Cross-contamination prevention is only important in multi-product facilities.",a:false,e:"Cross-contamination controls are essential in all manufacturing environments."},
+  {s:"Corrective actions fix existing problems, while preventive actions stop future problems.",a:true,e:"This correctly distinguishes the two components of CAPA."},
+  {s:"Non-conformance reports are only needed when a customer complaint is received.",a:false,e:"NCRs should be raised for any non-conformance, complaint or not."},
+  {s:"Water For Injection (WFI) is the highest purity grade of water in pharma.",a:true,e:"WFI meets the strictest purity requirements for injectable products."},
+  {s:"Root cause analysis should stop once the most obvious cause is identified.",a:false,e:"RCA should dig deeper to find the true underlying cause."},
+  {s:"A Quality Management Review should be conducted at planned intervals by senior management.",a:true,e:"Management reviews ensure the quality system remains suitable and effective."},
+  {s:"Statistical Process Control charts help monitor process variability over time.",a:true,e:"SPC uses statistical techniques to monitor and control processes."},
+  {s:"Annual Product Reviews evaluate quality trends and process performance.",a:true,e:"APRs are regulatory requirements to assess ongoing product quality."},
+  {s:"It is acceptable to use a test result from a previous batch if the same raw material was used.",a:false,e:"Each batch requires its own testing regardless of material source."},
+  {s:"A quality event only needs to be reported if it affects the final product.",a:false,e:"All quality events must be documented even if impact is not immediately clear."},
+];
+
+/* ══════════════════════════════════════════════════
+   GITHUB API (same pattern as reference code)
+   ══════════════════════════════════════════════════ */
+let ghFileSha = null;
+
+function getGHToken(){
+  const p = new URLSearchParams(window.location.search).get('t');
+  if(p && p.length > 10){ sessionStorage.setItem('qq_gh_token', p); return p; }
+  return sessionStorage.getItem('qq_gh_token') || '';
+}
+function ghHeaders(){
+  return {"Authorization":"token "+getGHToken(),"Content-Type":"application/json","Accept":"application/vnd.github.v3+json"};
+}
+function isGHReady(){ return getGHToken().length > 10; }
+
+async function ghGet(){
+  try{
+    const r = await fetch(GH_API+"?t="+Date.now(), {headers:ghHeaders()});
+    if(!r.ok) return null;
+    const j = await r.json();
+    const decoded = decodeURIComponent(escape(atob(j.content.replace(/\n/g,""))));
+    ghFileSha = j.sha;
+    return JSON.parse(decoded);
+  }catch(e){ console.warn("GH read error",e); return null; }
+}
+
+async function ghSet(data){
+  try{
+    if(!ghFileSha){
+      const r = await fetch(GH_API, {headers:ghHeaders()});
+      if(r.ok){ const j = await r.json(); ghFileSha = j.sha; }
+    }
+    const body = {
+      message:"leaderboard update",
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(data)))),
+      sha: ghFileSha
+    };
+    const r = await fetch(GH_API, {method:"PUT", headers:ghHeaders(), body:JSON.stringify(body)});
+    if(r.ok){ const j = await r.json(); ghFileSha = j.content.sha; }
+    else { console.warn("GH write failed", r.status); }
+  }catch(e){ console.warn("GH write error",e); }
+}
+
+/* ══════════════════════════════════════════════════
+   STATE
+   ══════════════════════════════════════════════════ */
+let playerName="", playerLillyId="";
+let score=0, timerSec=TOTAL_TIME, timerInt=null, startTime=null, finished=false;
+let currentSection=0; // 0=fillblank, 1=scramble, 2=myth
+let currentQ=0;
+let sectionQuestions=[[],[],[]]; // questions for each section
+let lbPollInt=null, cameFrom="register";
+
+const SECTIONS = [
+  {id:"fillblank", icon:"✏️", name:"Fill in the Blank", color:"#e11d48"},
+  {id:"scramble", icon:"🔤", name:"Word Unscrambler", color:"#3b82f6"},
+  {id:"myth", icon:"🕵️", name:"Myth Buster", color:"#8b5cf6"},
+];
+
+/* ══════════════════════════════════════════════════
+   UTILITIES
+   ══════════════════════════════════════════════════ */
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(s){ const m=Math.floor(s/60),sc=s%60; return m+':'+(sc<10?'0':'')+sc; }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+function scrambleWord(word){
+  let s=word.split(""), attempts=0;
+  do{ s=shuffle(s); attempts++; }while(s.join("")===word && attempts<20);
+  return s.join("");
+}
+
+/* ══════════════════════════════════════════════════
+   REGISTRATION
+   ══════════════════════════════════════════════════ */
+function goRegister(){
+  stopLBPoll();
+  document.getElementById('inpName').value='';
+  document.getElementById('inpLillyId').value='';
+  document.getElementById('regError').style.display='none';
+  show('screen-register');
+}
+
+async function handleRegister(){
+  const name = document.getElementById('inpName').value.trim();
+  const lid = document.getElementById('inpLillyId').value.trim();
+  const errEl = document.getElementById('regError');
+  errEl.style.display='none';
+
+  if(!name || !lid){ errEl.textContent='Please enter both your name and Lilly ID.'; errEl.style.display='block'; return; }
+
+  const btn = document.getElementById('btnRegister');
+  btn.textContent='Checking...'; btn.disabled=true;
+
+  // Check if already played
+  let data = null;
+  if(isGHReady()){ data = await ghGet(); }
+  else {
+    try{ data = JSON.parse(localStorage.getItem('qq_data')||'{"leaderboard":[],"players":[]}'); }catch{ data={leaderboard:[],players:[]}; }
+  }
+
+  btn.textContent='Continue →'; btn.disabled=false;
+
+  if(data && data.players){
+    const played = data.players.find(p => p.toUpperCase() === lid.trim().toUpperCase());
+    if(played){
+      show('screen-already');
+      return;
+    }
+  }
+
+  playerName = name;
+  playerLillyId = lid;
+  document.getElementById('instrName').textContent = name;
+  show('screen-instructions');
+}
+
+/* ══════════════════════════════════════════════════
+   GAME ENGINE
+   ══════════════════════════════════════════════════ */
+function startGame(){
+  score = 0; timerSec = TOTAL_TIME; finished = false;
+  currentSection = 0; currentQ = 0;
+  startTime = Date.now();
+
+  // Prepare questions for each section
+  sectionQuestions[0] = shuffle(FILL_BLANKS).slice(0, Q_PER_SECTION);
+  const pickedWords = shuffle(SCRAMBLE_WORDS).slice(0, Q_PER_SECTION);
+  sectionQuestions[1] = pickedWords.map(w => ({word:w, scrambled:scrambleWord(w)}));
+  sectionQuestions[2] = shuffle(MYTHS).slice(0, Q_PER_SECTION);
+
+  document.getElementById('gamePlayerName').textContent = playerName;
+  updateScoreDisplay();
+  updateTimer();
+  renderSectionProgress();
+  renderCurrentQuestion();
+  show('screen-game');
+
+  clearInterval(timerInt);
+  timerInt = setInterval(()=>{
+    timerSec--;
+    updateTimer();
+    if(timerSec <= 0){
+      clearInterval(timerInt);
+      // TIME'S UP — auto submit
+      doFinish(true);
+    }
+  }, 1000);
+}
+
+function updateTimer(){
+  const el = document.getElementById('gameClock');
+  const fill = document.getElementById('gameTimerFill');
+  el.textContent = fmt(timerSec);
+  const pct = (timerSec / TOTAL_TIME) * 100;
+  fill.style.width = pct + '%';
+  const urgent = timerSec <= 60;
+  el.style.color = urgent ? '#ef4444' : '#f1f5f9';
+  fill.style.background = urgent ? 'linear-gradient(90deg,#ef4444,#f87171)' : 'linear-gradient(90deg,#e11d48,#f59e0b)';
+}
+
+function updateScoreDisplay(){
+  document.getElementById('gameScore').textContent = '★ ' + score;
+}
+
+function renderSectionProgress(){
+  const el = document.getElementById('secProgress');
+  el.innerHTML = '';
+  SECTIONS.forEach((s,i)=>{
+    const done = i < currentSection;
+    const active = i === currentSection;
+    el.innerHTML += '<div class="sec-step">' +
+      '<div class="sec-bar" style="background:'+(done?'#10b981':active?s.color:'#1e293b')+'"></div>' +
+      '<span class="sec-label" style="color:'+(done?'#10b981':active?s.color:'#64748b')+'">' +
+      s.icon + ' ' + (done?'✓ Done':active?'Playing':'Next') + '</span></div>';
+  });
+}
+
+function renderCurrentQuestion(){
+  if(finished) return;
+  const content = document.getElementById('gameContent');
+  const sIdx = currentSection;
+  const qIdx = currentQ;
+
+  if(sIdx === 0) renderFillBlank(content, sectionQuestions[0][qIdx], qIdx);
+  else if(sIdx === 1) renderScramble(content, sectionQuestions[1][qIdx], qIdx);
+  else if(sIdx === 2) renderMyth(content, sectionQuestions[2][qIdx], qIdx);
+}
+
+function advanceQuestion(){
+  if(finished) return;
+  currentQ++;
+  if(currentQ >= Q_PER_SECTION){
+    currentQ = 0;
+    currentSection++;
+    if(currentSection >= 3){
+      doFinish(false);
+      return;
+    }
+    renderSectionProgress();
+  }
+  renderCurrentQuestion();
+}
+
+/* ── Fill in the Blank ── */
+function renderFillBlank(el, q, idx){
+  const parts = q.s.split("_____");
+  const opts = shuffle(q.o);
+  el.innerHTML = '<div class="q-card" id="qCard">' +
+    '<div class="q-counter"><span class="q-section-tag">FILL IN THE BLANK</span><span class="q-num-tag">'+(idx+1)+' / '+Q_PER_SECTION+'</span></div>' +
+    '<p class="q-sentence">' + esc(parts[0]) + '<span class="blank-slot" id="blankSlot">?????</span>' + esc(parts[1]||'') + '</p>' +
+    '<div class="opt-grid" id="optGrid">' +
+    opts.map((o,i) => '<button class="opt-btn" onclick="pickFillBlank('+i+',this)" data-val="'+esc(o)+'">'+esc(o)+'</button>').join('') +
+    '</div></div>';
+}
+
+function pickFillBlank(idx, btnEl){
+  if(finished) return;
+  const val = btnEl.getAttribute('data-val');
+  const q = sectionQuestions[0][currentQ];
+  const correct = val === q.a;
+  const card = document.getElementById('qCard');
+  const slot = document.getElementById('blankSlot');
+
+  // Disable all buttons
+  document.querySelectorAll('#optGrid .opt-btn').forEach(b => b.style.pointerEvents='none');
+
+  slot.textContent = q.a;
+  if(correct){
+    score += 10; updateScoreDisplay();
+    card.classList.add('correct');
+    slot.classList.add('correct-slot');
+    btnEl.classList.add('correct-opt');
+  } else {
+    card.classList.add('wrong');
+    slot.classList.add('wrong-slot');
+    btnEl.classList.add('wrong-opt');
+    document.querySelectorAll('#optGrid .opt-btn').forEach(b => {
+      if(b.getAttribute('data-val') === q.a) b.classList.add('correct-opt');
+    });
+  }
+  setTimeout(advanceQuestion, 800);
+}
+
+/* ── Word Scramble ── */
+function renderScramble(el, q, idx){
+  el.innerHTML = '<div class="q-card" id="qCard">' +
+    '<div class="q-counter"><span class="q-section-tag">WORD UNSCRAMBLER</span><span class="q-num-tag">'+(idx+1)+' / '+Q_PER_SECTION+'</span></div>' +
+    '<p class="scramble-hint">Unscramble this quality term:</p>' +
+    '<div class="scramble-letters">' + q.scrambled.split('').map(l=>'<span class="scramble-tile">'+l+'</span>').join('') + '</div>' +
+    '<div class="scramble-input-row"><input class="scramble-input" id="scrambleInp" placeholder="Type your answer..." maxlength="'+q.word.length+'" />' +
+    '<button class="btn-check" onclick="checkScramble()">✓</button></div>' +
+    '<div style="text-align:center"><button class="btn-skip" onclick="skipScramble()">Skip →</button></div>' +
+    '</div>';
+  const inp = document.getElementById('scrambleInp');
+  inp.addEventListener('keydown', e => { if(e.key==='Enter' && inp.value.trim()) checkScramble(); });
+  setTimeout(()=>inp.focus(), 100);
+}
+
+function checkScramble(){
+  if(finished) return;
+  const inp = document.getElementById('scrambleInp');
+  const q = sectionQuestions[1][currentQ];
+  const correct = inp.value.trim().toUpperCase() === q.word;
+  const card = document.getElementById('qCard');
+
+  inp.disabled = true;
+  document.querySelector('.btn-check').disabled = true;
+  document.querySelector('.btn-skip').style.display = 'none';
+
+  if(correct){ score += 10; updateScoreDisplay(); card.classList.add('correct'); }
+  else { card.classList.add('wrong'); }
+  setTimeout(advanceQuestion, 800);
+}
+
+function skipScramble(){
+  if(finished) return;
+  advanceQuestion();
+}
+
+/* ── Myth Buster ── */
+function renderMyth(el, q, idx){
+  el.innerHTML = '<div class="q-card" id="qCard">' +
+    '<div class="q-counter"><span class="q-section-tag">QUALITY MYTH BUSTER</span><span class="q-num-tag">'+(idx+1)+' / '+Q_PER_SECTION+'</span></div>' +
+    '<div class="myth-tag">Fact or Myth?</div>' +
+    '<p class="myth-statement">"' + esc(q.s) + '"</p>' +
+    '<div class="myth-btns" id="mythBtns">' +
+    '<button class="myth-true" onclick="pickMyth(true)">✓ TRUE</button>' +
+    '<button class="myth-false" onclick="pickMyth(false)">✗ FALSE</button></div>' +
+    '<div id="mythExplain"></div></div>';
+}
+
+function pickMyth(answer){
+  if(finished) return;
+  const q = sectionQuestions[2][currentQ];
+  const correct = answer === q.a;
+  const card = document.getElementById('qCard');
+
+  document.getElementById('mythBtns').style.display = 'none';
+
+  if(correct){ score += 10; updateScoreDisplay(); card.classList.add('correct'); }
+  else { card.classList.add('wrong'); }
+
+  const cls = correct ? 'explain-correct' : 'explain-wrong';
+  const title = correct ? '✓ Correct!' : '✗ Wrong!';
+  const answerText = q.a ? 'TRUE' : 'FALSE';
+  document.getElementById('mythExplain').innerHTML =
+    '<div class="myth-explain '+cls+'">' +
+    '<div class="myth-explain-title" style="color:'+(correct?'var(--green)':'var(--red)')+'">'+title+' — The answer is '+answerText+'</div>' +
+    '<div style="color:var(--muted)">'+esc(q.e)+'</div></div>';
+
+  setTimeout(advanceQuestion, 1500);
+}
+
+/* ══════════════════════════════════════════════════
+   FINISH GAME
+   ══════════════════════════════════════════════════ */
+async function doFinish(timedOut){
+  if(finished) return;
+  finished = true;
+  clearInterval(timerInt);
+
+  // Freeze game UI immediately
+  const content = document.getElementById('gameContent');
+  content.classList.add('game-frozen');
+  document.getElementById('btnSubmitEarly').disabled = true;
+  document.getElementById('btnSubmitEarly').style.opacity = '0.3';
+
+  const elapsed = Math.min(Math.floor((Date.now() - startTime) / 1000), TOTAL_TIME);
+  const correctCount = score / 10;
+
+  let finalScore = 0;
+  if(correctCount > 0){
+    const timeBonusRaw = Math.max(0, TOTAL_TIME - elapsed);
+    finalScore = score + Math.floor(timeBonusRaw / 3);
+  }
+
+  // Save to leaderboard
+  const entry = {
+    name: playerName,
+    lillyId: playerLillyId,
+    score: finalScore,
+    timeTaken: elapsed,
+    timeStr: fmt(elapsed),
+    timestamp: Date.now()
+  };
+
+  if(isGHReady()){
+    const data = await ghGet() || {leaderboard:[],players:[]};
+    if(!data.leaderboard) data.leaderboard = [];
+    if(!data.players) data.players = [];
+    data.leaderboard.push(entry);
+    data.players.push(playerLillyId.trim().toUpperCase());
+    await ghSet(data);
+  } else {
+    let data;
+    try{ data = JSON.parse(localStorage.getItem('qq_data')||'{}'); }catch{ data={}; }
+    if(!data.leaderboard) data.leaderboard = [];
+    if(!data.players) data.players = [];
+    data.leaderboard.push(entry);
+    data.players.push(playerLillyId.trim().toUpperCase());
+    try{ localStorage.setItem('qq_data', JSON.stringify(data)); }catch{}
+  }
+
+  // Show result
+  document.getElementById('resultEmoji').textContent = timedOut ? '⏰' : '🎉';
+  document.getElementById('resultTitle').textContent = timedOut ? "Time's Up!" : 'Well Done, ' + playerName + '!';
+  document.getElementById('resultSub').textContent = timedOut
+    ? 'Your score has been submitted automatically, ' + playerName + '.'
+    : 'You completed all sections! Your results are in.';
+  document.getElementById('resultScore').textContent = '★ ' + finalScore;
+  document.getElementById('resultLillyId').textContent = playerLillyId;
+  document.getElementById('resultTime').textContent = fmt(elapsed);
+
+  show('screen-result');
+}
+
+/* ══════════════════════════════════════════════════
+   LEADERBOARD
+   ══════════════════════════════════════════════════ */
+async function fetchAndRenderLB(){
+  let data = null;
+  if(isGHReady()){
+    data = await ghGet();
+  } else {
+    try{ data = JSON.parse(localStorage.getItem('qq_data')||'{}'); }catch{ data={}; }
+  }
+
+  const body = document.getElementById('lbBody');
+  if(!data || !data.leaderboard || !data.leaderboard.length){
+    body.innerHTML = '<div class="lb-empty"><div class="lb-empty-icon">📋</div><p>No entries yet — be the first to play!</p></div>';
+    return;
+  }
+
+  const sorted = [...data.leaderboard].sort((a,b) => b.score !== a.score ? b.score - a.score : a.timeTaken - b.timeTaken);
+  const medals = ['🥇','🥈','🥉'];
+  const rowClasses = ['gold-row','silver-row','bronze-row'];
+
+  body.innerHTML = sorted.map((e,i) =>
+    '<div class="lb-row '+(i<3?rowClasses[i]:'')+'">' +
+    (i<3 ? '<div class="lb-rank">'+medals[i]+'</div>' : '<div class="lb-rank-num">'+(i+1)+'</div>') +
+    '<div class="lb-info"><div class="lb-name">'+esc(e.name)+'</div><div class="lb-id">'+esc(e.lillyId)+'</div></div>' +
+    '<div class="lb-score-col"><div class="lb-score-val">★ '+e.score+'</div><div class="lb-time-val">'+esc(e.timeStr)+'</div></div></div>'
+  ).join('');
+}
+
+function showLeaderboard(){
+  cameFrom = document.querySelector('.screen.active')?.id || 'screen-register';
+  show('screen-leaderboard');
+  document.getElementById('lbBody').innerHTML = '<div class="lb-empty">Loading...</div>';
+  fetchAndRenderLB();
+  clearInterval(lbPollInt);
+  lbPollInt = setInterval(fetchAndRenderLB, 15000);
+}
+
+function stopLBPoll(){ clearInterval(lbPollInt); }
+
+function goBack(){
+  stopLBPoll();
+  if(finished || cameFrom === 'screen-result') show('screen-register');
+  else show(cameFrom);
+}
+
+/* ══════════════════════════════════════════════════
+   ADMIN
+   ══════════════════════════════════════════════════ */
+function showAdmin(){ show('screen-admin'); stopLBPoll(); genQR(); }
+
+function genQR(){
+  let url = document.getElementById('qrUrlInp').value.trim();
+  if(!url) url = window.location.href.split('?')[0];
+  const tok = document.getElementById('ghTokenInp').value || '';
+  if(tok.length > 10){
+    const u = new URL(url.includes('://')?url:'https://'+url);
+    u.searchParams.set('t', tok);
+    url = u.href;
+    sessionStorage.setItem('qq_gh_token', tok);
+  }
+  document.getElementById('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=0A0E1A&data=' + encodeURIComponent(url);
+}
+
+async function clearAllData(){
+  if(!confirm('Clear the ENTIRE leaderboard? This cannot be undone.')) return;
+  if(isGHReady()){
+    await ghSet({leaderboard:[],players:[]});
+  } else {
+    try{ localStorage.removeItem('qq_data'); }catch{}
+  }
+  alert('Leaderboard cleared!');
+}
+
+/* ══════════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════════ */
+window.addEventListener('load', function(){
+  document.getElementById('qrUrlInp').value = window.location.href.split('?')[0];
+  genQR();
+});
+</script>
+</body>
+</html>  
